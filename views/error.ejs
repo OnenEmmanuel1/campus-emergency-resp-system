@@ -1,0 +1,21 @@
+<%- include('partials/header') %>
+<%- include('partials/navbar') %>
+
+<div class="cers-layout-sidebar">
+  <%- include('partials/sidebar') %>
+  
+  <main class="cers-content">
+    <div class="cers-card" style="border-color: var(--cers-danger);">
+      <div class="cers-card-title text-danger" style="border-bottom: 2px solid #fee2e2; padding-bottom: 0.5rem;">
+        An Error Has Occurred
+      </div>
+      <p class="py-3" style="font-size: 1.1rem;"><%= typeof message !== 'undefined' ? message : 'An unexpected security or routing error has occurred.' %></p>
+      
+      <div class="mt-4">
+        <a href="/dashboard" class="cers-btn cers-btn-primary">Return to Dashboard</a>
+      </div>
+    </div>
+  </main>
+</div>
+
+<%- include('partials/footer') %>

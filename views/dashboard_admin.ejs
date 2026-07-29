@@ -1,0 +1,223 @@
+<%- include('partials/header') %>
+<%- include('partials/navbar') %>
+<%- include('partials/sidebar') %>
+
+<!-- Admin Dashboard Title -->
+<div class="mb-3">
+  <h2 style="font-weight: 800; font-size: 1.25rem; text-transform: uppercase; color: var(--cers-primary);">Admin Console</h2>
+  <p class="text-muted" style="font-size: 0.78rem;">System metrics and responder account provisioning.</p>
+</div>
+
+<!-- Analytics summaries card (Total, Active, Avg Time, Critical) -->
+<div class="cers-summary-cards" style="grid-template-columns: repeat(2, 1fr); gap: 0.65rem; margin-bottom: 1.25rem;">
+  <% 
+    let totalIncidents = 0;
+    analytics.byStatus.forEach(s => totalIncidents += s.count);
+    
+    let activeIncidents = 0;
+    analytics.byStatus.forEach(s => {
+      if (s.status !== 'resolved') activeIncidents += s.count;
+    });
+
+    let criticalIncidents = 0;
+    analytics.bySeverity.forEach(s => {
+      if (s.severity === 'critical') criticalIncidents += s.count;
+    });
+  %>
+  <div class="cers-summary-card">
+    <div class="cers-summary-val"><%= totalIncidents %></div>
+    <div class="cers-summary-label">Total Filed</div>
+  </div>
+  <div class="cers-summary-card cers-active-card">
+    <div class="cers-summary-val"><%= activeIncidents %></div>
+    <div class="cers-summary-label">Active Alerts</div>
+  </div>
+  <div class="cers-summary-card">
+    <div class="cers-summary-val" style="font-size: 1.15rem; line-height: 1.4;"><%= analytics.avgResponseTime %>m</div>
+    <div class="cers-summary-label">Avg Response</div>
+  </div>
+  <div class="cers-summary-card" style="border-color: var(--cers-danger);">
+    <div class="cers-summary-val" style="color: var(--cers-danger);"><%= criticalIncidents %></div>
+    <div class="cers-summary-label" style="color: var(--cers-danger);">Critical</div>
+  </div>
+</div>
+
+<!-- Tabs Switcher (Monex category switcher) -->
+<div class="cers-tabs-switcher">
+  <div class="cers-tab-btn cers-active" onclick="window.location.hash='#incidents-log';">Incidents Log</div>
+  <div class="cers-tab-btn" onclick="window.location.hash='#users-control';">Accounts</div>
+</div>
+
+<!-- Incident Logs (Card-based List instead of Desktop Table) -->
+<div class="cers-card" id="incidents-log" style="scroll-margin-top: 20px;">
+  <div class="cers-card-title">
+    Incident Dispatch Log
+    <a href="/api/admin/export-csv" class="cers-btn cers-btn-secondary" style="font-size: 0.7rem; padding: 0.3rem 0.6rem; text-transform: none;" download>Export CSV</a>
+  </div>
+  <p class="text-muted" style="font-size: 0.75rem; margin-bottom: 1rem;">Showing recent campus-wide emergency reports.</p>
+
+  <div class="cers-list-feed">
+    <% incidents.forEach(incident => { %>
+      <% 
+        let iconSvg = '';
+        let iconColorClass = '';
+        if (incident.category === 'fire') {
+          iconColorClass = 'cers-icon-danger';
+          iconSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 3.5z"/></svg>';
+        } else if (incident.category === 'medical') {
+          iconColorClass = 'cers-icon-danger';
+          iconSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>';
+        } else if (incident.category === 'security') {
+          iconColorClass = 'cers-icon-danger';
+          iconSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>';
+        } else if (incident.category === 'accident') {
+          iconColorClass = '';
+          iconSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>';
+        } else {
+          iconColorClass = '';
+          iconSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>';
+        }
+      %>
+      <div class="cers-list-item">
+        <div class="cers-list-icon <%= iconColorClass %>">
+          <%- iconSvg %>
+        </div>
+        <div class="cers-list-details">
+          <div class="cers-list-title">Incident #<%= incident.id %> - <%= incident.category.toUpperCase() %></div>
+          <div class="cers-list-subtitle">Reporter: <strong><%= incident.reporter_name %></strong></div>
+          <div style="font-size: 0.65rem; color: var(--cers-text-muted); margin-top: 0.15rem;">
+            <%= new Date(incident.created_at).toLocaleString() %>
+          </div>
+        </div>
+        <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 0.35rem;">
+          <span class="cers-pill cers-pill-severity-<%= incident.severity %>" style="font-size: 0.6rem;">
+            <%= incident.severity %>
+          </span>
+          <span class="cers-pill cers-pill-status-<%= incident.status %>" style="font-size: 0.6rem;">
+            <%= incident.status %>
+          </span>
+          <a href="/incidents/<%= incident.id %>" class="cers-btn cers-btn-secondary" style="font-size: 0.72rem; padding: 0.25rem 0.5rem; text-transform: none; border-radius: 8px;">
+            Audit
+          </a>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+</div>
+
+<!-- Accounts Control Section (Creation Form + User List) -->
+<div class="cers-card" id="users-control" style="scroll-margin-top: 20px; display: none;">
+  <div class="cers-card-title" id="cers-user-form-title">Create Account</div>
+  <p class="text-muted" style="font-size: 0.75rem; margin-bottom: 1.25rem;">Provision emergency responders and administrative personnel.</p>
+
+  <form id="cers-user-form">
+    <div class="cers-form-group">
+      <label for="name" class="cers-form-label">Full Name</label>
+      <input type="text" id="name" class="cers-form-control" required placeholder="e.g. Capt. Vance">
+    </div>
+
+    <div class="cers-form-group">
+      <label for="email" class="cers-form-label">Email Address</label>
+      <input type="email" id="email" class="cers-form-control" required placeholder="e.g. security-dispatch@campusalert.edu">
+    </div>
+
+    <div class="cers-form-group">
+      <label for="password" class="cers-form-label">Password</label>
+      <input type="password" id="password" class="cers-form-control" required placeholder="••••••••">
+    </div>
+
+    <div class="cers-form-group">
+      <label for="role" class="cers-form-label">System Role</label>
+      <select id="role" class="cers-form-control">
+        <option value="reporter">Reporter (Student/Staff)</option>
+        <option value="response_unit">Response Unit (Responder)</option>
+        <option value="admin">Administrator</option>
+      </select>
+    </div>
+
+    <div class="cers-form-group" id="unit-type-group" style="display: none;">
+      <label for="response_unit_type" class="cers-form-label">Response Unit Discipline</label>
+      <select id="response_unit_type" class="cers-form-control">
+        <option value="security">Security Dispatch</option>
+        <option value="medical">Medical Response</option>
+        <option value="fire">Fire Marshall</option>
+      </select>
+    </div>
+
+    <div id="user-feedback" class="cers-form-feedback"></div>
+
+    <div class="d-flex gap-2 mt-4" style="border-top: 1px solid var(--cers-border); padding-top: 1rem;">
+      <button type="submit" class="cers-btn cers-btn-primary flex-grow-1">SAVE ACCOUNT</button>
+      <button type="reset" class="cers-btn cers-btn-secondary" onclick="window.location.reload();">CANCEL</button>
+    </div>
+  </form>
+
+  <div style="border-top: 2px solid var(--cers-border); margin: 2rem 0 1rem 0; padding-top: 1.5rem; font-weight: 700; font-size: 1rem; color: var(--cers-text-main);">
+    Registered Accounts
+  </div>
+
+  <div class="cers-list-feed" style="max-height: 320px; overflow-y: auto;">
+    <% users.forEach(u => { %>
+      <div class="cers-list-item" style="padding: 0.65rem 0.85rem;">
+        <div class="cers-list-details">
+          <div style="font-weight: 700; font-size: 0.85rem; color: var(--cers-text-main);"><%= u.name %></div>
+          <div style="font-size: 0.72rem; color: var(--cers-text-muted);"><%= u.email %></div>
+          <div style="margin-top: 0.25rem;">
+            <span class="cers-badge-role cers-role-<%= u.role %>" style="font-size: 0.6rem; padding: 0.1rem 0.4rem; background-color: #f1f5f9; border: 1px solid #cbd5e1; color: #475569;">
+              <%= u.role === 'response_unit' ? `${u.response_unit_type.toUpperCase()} RESPONDER` : u.role.toUpperCase() %>
+            </span>
+          </div>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+          <button class="cers-btn cers-btn-secondary cers-btn-edit-user" data-user-json="<%= JSON.stringify(u) %>" style="font-size: 0.7rem; padding: 0.25rem 0.5rem; text-transform: none; border-radius: 8px;">Edit</button>
+          <% if (u.id !== user.id) { %>
+            <button class="cers-btn cers-btn-danger cers-btn-delete-user" data-user-id="<%= u.id %>" data-user-name="<%= u.name %>" style="font-size: 0.7rem; padding: 0.25rem 0.5rem; text-transform: none; border-radius: 8px;">Delete</button>
+          <% } %>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+</div>
+
+<!-- Tab toggle scripting -->
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const tabs = document.querySelectorAll('.cers-tab-btn');
+    const sections = {
+      'incidents-log': document.getElementById('incidents-log'),
+      'users-control': document.getElementById('users-control')
+    };
+
+    function activateTab(targetId) {
+      const activeId = sections[targetId] ? targetId : 'incidents-log';
+      
+      tabs.forEach(tab => {
+        if (tab.innerText.toLowerCase().includes(activeId === 'incidents-log' ? 'log' : 'account')) {
+          tab.classList.add('cers-active');
+        } else {
+          tab.classList.remove('cers-active');
+        }
+      });
+      
+      // Toggle display
+      Object.keys(sections).forEach(key => {
+        if (key === activeId) {
+          sections[key].style.display = 'block';
+        } else {
+          sections[key].style.display = 'none';
+        }
+      });
+    }
+
+    window.addEventListener('hashchange', () => {
+      const hash = window.location.hash.replace('#', '');
+      activateTab(hash);
+    });
+
+    // Initial check
+    const initialHash = window.location.hash.replace('#', '');
+    activateTab(initialHash);
+  });
+</script>
+
+<%- include('partials/footer') %>

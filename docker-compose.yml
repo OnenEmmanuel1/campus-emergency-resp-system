@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  cers-db:
+    image: mysql:8.0
+    container_name: cers-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME:-campus_alert}
+    ports:
+      - "${DB_PORT:-3306}:3306"
+    volumes:
+      - ./schema.sql:/docker-entrypoint-initdb.d/1-schema.sql
+      - ./seed.sql:/docker-entrypoint-initdb.d/2-seed.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_PASSWORD}"]
+      timeout: 10s
+      retries: 5
+      interval: 10s
+
+  cers-app:
+    build: .
+    container_name: cers-app
+    restart: always
+    ports:
+      - "${PORT:-3000}:${PORT:-3000}"
+    environment:
+      - PORT=${PORT:-3000}
+      - DB_HOST=cers-db
+      - DB_USER=root
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME:-campus_alert}
+      - DB_PORT=3306
+      - SESSION_SECRET=${SESSION_SECRET:-campus_alert_super_secret_session_key_9876}
+    depends_on:
+      cers-db:
+        condition: service_healthy

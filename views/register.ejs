@@ -1,0 +1,69 @@
+<%- include('partials/header') %>
+
+<div class="cers-auth-wrapper">
+  <div class="cers-auth-backdrop">
+    
+    <!-- Left Pane: Tagline & abstract wavy lines -->
+    <div class="cers-auth-info-pane">
+      <svg style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;" viewBox="0 0 100 100" preserveAspectRatio="none">
+        <circle cx="0" cy="100" r="80" fill="rgba(255,255,255,0.03)" />
+        <circle cx="100" cy="0" r="50" fill="rgba(255,255,255,0.05)" />
+        <path d="M-10,90 Q30,50 70,80 T110,60" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="2" />
+        <path d="M-10,100 Q40,70 80,90 T110,80" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="4" />
+      </svg>
+      
+      <div style="z-index: 10;">
+        <span style="background-color: rgba(255,255,255,0.18); color: #ffffff; padding: 0.35rem 0.75rem; border-radius: var(--cers-radius-pill); font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; display: inline-block; margin-bottom: 1.5rem;">
+          JOIN SYSTEM
+        </span>
+        <h1>Campus Emergency Response & Reporting System: Real-Time Dispatch.</h1>
+      </div>
+    </div>
+    
+    <!-- Right Pane: Register Card -->
+    <div class="cers-auth-form-pane">
+      
+      <!-- Brand Logo Header -->
+      <div style="display: flex; align-items: center; justify-content: flex-start; gap: 0.5rem; margin-bottom: 1.25rem;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="color: #2563eb;">
+          <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
+        </svg>
+        <span style="font-weight: 800; font-size: 1.35rem; color: #2563eb; letter-spacing: -0.5px;">CampusAlert</span>
+      </div>
+
+      <div style="font-weight: 800; font-size: 1.2rem; color: var(--cers-text-main); margin-bottom: 0.2rem;">Create Account</div>
+      <div class="text-muted" style="font-size: 0.78rem; margin-bottom: 1.25rem;">Register a reporter profile (Student/Staff).</div>
+      
+      <form id="cers-register-form">
+        <!-- Floating Label 1 -->
+        <div class="cers-input-wrapper">
+          <label for="name" class="cers-input-label">Full Name</label>
+          <input type="text" id="name" class="cers-input-field" required placeholder="e.g. John Doe">
+        </div>
+
+        <!-- Floating Label 2 -->
+        <div class="cers-input-wrapper">
+          <label for="email" class="cers-input-label">Campus Email</label>
+          <input type="email" id="email" class="cers-input-field" required placeholder="e.g. jdoe@campusalert.edu">
+        </div>
+        
+        <!-- Floating Label 3 -->
+        <div class="cers-input-wrapper">
+          <label for="password" class="cers-input-label">Password</label>
+          <input type="password" id="password" class="cers-input-field" required placeholder="Minimum 6 characters">
+        </div>
+        
+        <div id="auth-feedback" class="cers-form-feedback"></div>
+        
+        <button type="submit" class="cers-btn cers-btn-primary cers-btn-block mt-3">CREATE ACCOUNT</button>
+      </form>
+      
+      <div class="text-center mt-3" style="font-size: 0.8rem; border-top: 1px solid var(--cers-border); padding-top: 1rem;">
+        <span class="text-muted">Already registered?</span> <a href="/login">Log in here</a>
+      </div>
+    </div>
+    
+  </div>
+</div>
+
+<%- include('partials/footer') %>

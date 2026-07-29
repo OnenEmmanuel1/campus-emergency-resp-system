@@ -1,0 +1,137 @@
+<%- include('partials/header') %>
+<%- include('partials/navbar') %>
+<%- include('partials/sidebar') %>
+
+<!-- Responder Unit Circular Stat Badge (Savings equivalent) -->
+<% 
+  let activeIncidentsCount = incidents.filter(i => i.status !== 'resolved').length;
+%>
+<div class="cers-circular-meter-card">
+  <div class="cers-circular-meter">
+    <div class="cers-circular-meter-progress"></div>
+    <div class="cers-circular-meter-val"><%= activeIncidentsCount %></div>
+    <div class="cers-circular-meter-label">Active</div>
+  </div>
+  <div style="font-weight: 800; font-size: 0.95rem; text-transform: uppercase;"><%= user.response_unit_type %> Command</div>
+  <p style="font-size: 0.72rem; opacity: 0.85; margin-top: 0.25rem; max-width: 280px; text-align: center;">
+    Emergency alerts routed to your discipline. Select dispatch list below to update status.
+  </p>
+</div>
+
+<!-- Tabs selector switcher -->
+<div class="cers-tabs-switcher">
+  <div class="cers-tab-btn cers-active" onclick="window.location.hash='#active-incidents';">Dispatch List</div>
+  <div class="cers-tab-btn" onclick="window.location.hash='#notifications';">Live Alert Feed</div>
+</div>
+
+<!-- Live Notifications Feed -->
+<div class="cers-card" id="notifications" style="scroll-margin-top: 20px;">
+  <div class="cers-card-title">
+    Live Alert Feed
+    <span class="cers-pill cers-pill-severity-critical">Live Polling</span>
+  </div>
+  <p class="text-muted" style="font-size: 0.75rem; margin-bottom: 1rem;">Recent notifications routed to your responder credentials.</p>
+  
+  <div class="cers-notification-feed" id="cers-notification-feed-container">
+    <div class="text-center py-4">
+      <div class="spinner-border text-primary" role="status" style="width: 1.25rem; height: 1.25rem; border-width: 2px;"></div>
+      <p class="text-muted mt-2" style="font-size: 0.75rem;">Awaiting incoming dispatch transmissions...</p>
+    </div>
+  </div>
+</div>
+
+<!-- Dispatch Logs (List view instead of desktop tables) -->
+<div class="cers-card" id="active-incidents" style="scroll-margin-top: 20px;">
+  <div class="cers-card-title">Routed Incident Logs</div>
+  
+  <% if (incidents.length === 0) { %>
+    <p class="text-muted text-center py-5" style="font-size: 0.8rem;">No emergencies routed to your unit type.</p>
+  <% } else { %>
+    <div class="cers-list-feed">
+      <% incidents.forEach(incident => { %>
+        <% 
+          let iconSvg = '';
+          let iconColorClass = '';
+          if (incident.category === 'fire') {
+            iconColorClass = 'cers-icon-danger';
+            iconSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 3.5z"/></svg>';
+          } else if (incident.category === 'medical') {
+            iconColorClass = 'cers-icon-danger';
+            iconSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>';
+          } else if (incident.category === 'security') {
+            iconColorClass = 'cers-icon-danger';
+            iconSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>';
+          } else if (incident.category === 'accident') {
+            iconColorClass = '';
+            iconSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>';
+          } else {
+            iconColorClass = '';
+            iconSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>';
+          }
+        %>
+        <!-- Highlight reported as warning style card border -->
+        <div class="cers-list-item" style="<%= incident.status === 'reported' ? 'border-left: 4px solid var(--cers-warning); background-color: #fffbeb;' : '' %>">
+          <div class="cers-list-icon <%= iconColorClass %>">
+            <%- iconSvg %>
+          </div>
+          <div class="cers-list-details">
+            <div class="cers-list-title">Incident #<%= incident.id %> - <%= incident.category.toUpperCase() %></div>
+            <div class="cers-list-subtitle">
+              Reporter: <strong><%= incident.reporter_name %></strong>
+            </div>
+            <div style="font-size: 0.65rem; color: var(--cers-text-muted); margin-top: 0.15rem;">
+              Reported <%= new Date(incident.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) %>
+            </div>
+          </div>
+          <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 0.35rem;">
+            <span class="cers-pill cers-pill-severity-<%= incident.severity %>" style="font-size: 0.6rem;">
+              <%= incident.severity %>
+            </span>
+            <span class="cers-pill cers-pill-status-<%= incident.status %>" style="font-size: 0.6rem;">
+              <%= incident.status %>
+            </span>
+            <a href="/incidents/<%= incident.id %>" class="cers-btn cers-btn-primary" style="font-size: 0.72rem; padding: 0.25rem 0.5rem; text-transform: none; border-radius: 8px; margin-top: 0.15rem;">
+              Respond
+            </a>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  <% } %>
+</div>
+
+<!-- Tab toggle scripting -->
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const tabs = document.querySelectorAll('.cers-tab-btn');
+    const sections = {
+      'active-incidents': document.getElementById('active-incidents'),
+      'notifications': document.getElementById('notifications')
+    };
+
+    function activateTab(targetId) {
+      tabs.forEach(tab => {
+        if (tab.innerText.toLowerCase().includes(targetId === 'active-incidents' ? 'list' : 'feed')) {
+          tab.classList.add('cers-active');
+        } else {
+          tab.classList.remove('cers-active');
+        }
+      });
+    }
+
+    window.addEventListener('hashchange', () => {
+      const hash = window.location.hash.replace('#', '');
+      if (sections[hash]) {
+        activateTab(hash);
+      }
+    });
+
+    // Initial check
+    const initialHash = window.location.hash.replace('#', '');
+    if (sections[initialHash]) {
+      activateTab(initialHash);
+    }
+  });
+</script>
+
+<%- include('partials/footer') %>

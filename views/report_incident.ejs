@@ -1,0 +1,63 @@
+<%- include('partials/header') %>
+<%- include('partials/navbar') %>
+<%- include('partials/sidebar') %>
+
+<div class="cers-card">
+  <div class="cers-card-title" style="border-bottom: 1px solid var(--cers-border); padding-bottom: 0.5rem; margin-bottom: 1rem;">
+    File Emergency Report
+  </div>
+  <p class="text-muted" style="font-size: 0.75rem; margin-bottom: 1.25rem;">
+    Please complete the details below to alert dispatch. Browser coordinates auto-lock on load to locate your position.
+  </p>
+
+  <form id="cers-report-form">
+    <div class="cers-form-group">
+      <label for="category" class="cers-form-label">Category</label>
+      <select id="category" class="cers-form-control" required>
+        <option value="" disabled selected>-- Select Incident Category --</option>
+        <option value="security">Security Alert / Theft / Assault</option>
+        <option value="medical">Medical Emergency / Injury</option>
+        <option value="fire">Fire Hazard / Smoke / Gas leak</option>
+        <option value="accident">Accident / Vehicle / Slip & Fall</option>
+        <option value="other">Other Campus Danger</option>
+      </select>
+    </div>
+
+    <div class="cers-form-group">
+      <label for="severity" class="cers-form-label">Severity Self-Assessment</label>
+      <select id="severity" class="cers-form-control">
+        <option value="">Auto-Classify (Based on Details)</option>
+        <option value="critical">Critical (Immediate threat to life)</option>
+        <option value="high">High (Urgent threat, needs dispatch)</option>
+        <option value="medium">Medium (Moderate concern)</option>
+        <option value="low">Low (Minor hazard / status update)</option>
+      </select>
+    </div>
+
+    <div class="cers-form-group">
+      <label for="description" class="cers-form-label">Description & Location details</label>
+      <textarea id="description" class="cers-form-control" rows="4" required placeholder="Describe details, room number, or closest landmark. e.g. Lab 4 B-Block smoke coming from wall socket."></textarea>
+    </div>
+
+    <!-- Coords -->
+    <div class="row">
+      <div class="col-6 cers-form-group">
+        <label for="latitude" class="cers-form-label">Latitude</label>
+        <input type="number" step="any" id="latitude" class="cers-form-control" placeholder="Acquiring...">
+      </div>
+      <div class="col-6 cers-form-group">
+        <label for="longitude" class="cers-form-label">Longitude</label>
+        <input type="number" step="any" id="longitude" class="cers-form-control" placeholder="Acquiring...">
+      </div>
+    </div>
+
+    <div id="report-feedback" class="cers-form-feedback"></div>
+
+    <div class="d-flex gap-2 mt-4" style="border-top: 1px solid var(--cers-border); padding-top: 1.25rem;">
+      <button type="submit" class="cers-btn cers-btn-primary flex-grow-1">SUBMIT REPORT</button>
+      <a href="/dashboard" class="cers-btn cers-btn-secondary">CANCEL</a>
+    </div>
+  </form>
+</div>
+
+<%- include('partials/footer') %>
