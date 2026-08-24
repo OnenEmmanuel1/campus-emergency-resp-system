@@ -3,179 +3,253 @@
 <%- include('partials/sidebar') %>
 
 <!-- Admin Dashboard Title -->
-<div class="mb-3">
-  <h2 style="font-weight: 800; font-size: 1.25rem; text-transform: uppercase; color: var(--cers-primary);">Admin Console</h2>
-  <p class="text-muted" style="font-size: 0.78rem;">System metrics and responder account provisioning.</p>
+<div class="mb-4">
+  <div style="display: flex; align-items: center; gap: 0.5rem;">
+    <h2 style="font-weight: 800; font-size: 1.35rem; color: var(--cers-primary); letter-spacing: -0.5px;">SYSTEM ADMINISTRATION CONSOLE</h2>
+    <span class="cers-pill cers-pill-status-dispatched" style="font-size: 0.65rem;">COMMAND LEVEL</span>
+  </div>
+  <p class="text-muted" style="font-size: 0.8rem; margin-top: 0.2rem;">Overview of campus emergency metrics, dispatch audit trails, and responder account management.</p>
 </div>
 
-<!-- Analytics summaries card (Total, Active, Avg Time, Critical) -->
-<div class="cers-summary-cards" style="grid-template-columns: repeat(2, 1fr); gap: 0.65rem; margin-bottom: 1.25rem;">
-  <% 
-    let totalIncidents = 0;
-    analytics.byStatus.forEach(s => totalIncidents += s.count);
-    
-    let activeIncidents = 0;
-    analytics.byStatus.forEach(s => {
-      if (s.status !== 'resolved') activeIncidents += s.count;
-    });
-
-    let criticalIncidents = 0;
-    analytics.bySeverity.forEach(s => {
-      if (s.severity === 'critical') criticalIncidents += s.count;
-    });
-  %>
-  <div class="cers-summary-card">
-    <div class="cers-summary-val"><%= totalIncidents %></div>
-    <div class="cers-summary-label">Total Filed</div>
-  </div>
-  <div class="cers-summary-card cers-active-card">
-    <div class="cers-summary-val"><%= activeIncidents %></div>
-    <div class="cers-summary-label">Active Alerts</div>
-  </div>
-  <div class="cers-summary-card">
-    <div class="cers-summary-val" style="font-size: 1.15rem; line-height: 1.4;"><%= analytics.avgResponseTime %>m</div>
-    <div class="cers-summary-label">Avg Response</div>
-  </div>
-  <div class="cers-summary-card" style="border-color: var(--cers-danger);">
-    <div class="cers-summary-val" style="color: var(--cers-danger);"><%= criticalIncidents %></div>
-    <div class="cers-summary-label" style="color: var(--cers-danger);">Critical</div>
-  </div>
-</div>
-
-<!-- Tabs Switcher (Monex category switcher) -->
-<div class="cers-tabs-switcher">
-  <div class="cers-tab-btn cers-active" onclick="window.location.hash='#incidents-log';">Incidents Log</div>
-  <div class="cers-tab-btn" onclick="window.location.hash='#users-control';">Accounts</div>
-</div>
-
-<!-- Incident Logs (Card-based List instead of Desktop Table) -->
-<div class="cers-card" id="incidents-log" style="scroll-margin-top: 20px;">
-  <div class="cers-card-title">
-    Incident Dispatch Log
-    <a href="/api/admin/export-csv" class="cers-btn cers-btn-secondary" style="font-size: 0.7rem; padding: 0.3rem 0.6rem; text-transform: none;" download>Export CSV</a>
-  </div>
-  <p class="text-muted" style="font-size: 0.75rem; margin-bottom: 1rem;">Showing recent campus-wide emergency reports.</p>
-
-  <div class="cers-list-feed">
-    <% incidents.forEach(incident => { %>
+<!-- Main Row Layout -->
+<div class="row g-4">
+  
+  <!-- Left/Main Column -->
+  <div class="col-xl-8 col-lg-7">
+    <!-- Analytics Summaries KPI Grid -->
+    <div class="cers-summary-cards" style="grid-template-columns: repeat(4, 1fr); gap: 0.75rem; margin-bottom: 1.5rem;">
       <% 
-        let iconSvg = '';
-        let iconColorClass = '';
-        if (incident.category === 'fire') {
-          iconColorClass = 'cers-icon-danger';
-          iconSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 3.5z"/></svg>';
-        } else if (incident.category === 'medical') {
-          iconColorClass = 'cers-icon-danger';
-          iconSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>';
-        } else if (incident.category === 'security') {
-          iconColorClass = 'cers-icon-danger';
-          iconSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>';
-        } else if (incident.category === 'accident') {
-          iconColorClass = '';
-          iconSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>';
-        } else {
-          iconColorClass = '';
-          iconSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>';
-        }
+        let totalIncidents = 0;
+        analytics.byStatus.forEach(s => totalIncidents += s.count);
+        
+        let activeIncidents = 0;
+        analytics.byStatus.forEach(s => {
+          if (s.status !== 'resolved') activeIncidents += s.count;
+        });
+
+        let criticalIncidents = 0;
+        analytics.bySeverity.forEach(s => {
+          if (s.severity === 'critical') criticalIncidents += s.count;
+        });
       %>
-      <div class="cers-list-item">
-        <div class="cers-list-icon <%= iconColorClass %>">
-          <%- iconSvg %>
-        </div>
-        <div class="cers-list-details">
-          <div class="cers-list-title">Incident #<%= incident.id %> - <%= incident.category.toUpperCase() %></div>
-          <div class="cers-list-subtitle">Reporter: <strong><%= incident.reporter_name %></strong></div>
-          <div style="font-size: 0.65rem; color: var(--cers-text-muted); margin-top: 0.15rem;">
-            <%= new Date(incident.created_at).toLocaleString() %>
-          </div>
-        </div>
-        <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 0.35rem;">
-          <span class="cers-pill cers-pill-severity-<%= incident.severity %>" style="font-size: 0.6rem;">
-            <%= incident.severity %>
-          </span>
-          <span class="cers-pill cers-pill-status-<%= incident.status %>" style="font-size: 0.6rem;">
-            <%= incident.status %>
-          </span>
-          <a href="/incidents/<%= incident.id %>" class="cers-btn cers-btn-secondary" style="font-size: 0.72rem; padding: 0.25rem 0.5rem; text-transform: none; border-radius: 8px;">
-            Audit
-          </a>
-        </div>
+      <div class="cers-summary-card">
+        <div class="cers-summary-val"><%= totalIncidents %></div>
+        <div class="cers-summary-label" style="font-size: 0.62rem;">Total Filed</div>
       </div>
-    <% }) %>
-  </div>
-</div>
-
-<!-- Accounts Control Section (Creation Form + User List) -->
-<div class="cers-card" id="users-control" style="scroll-margin-top: 20px; display: none;">
-  <div class="cers-card-title" id="cers-user-form-title">Create Account</div>
-  <p class="text-muted" style="font-size: 0.75rem; margin-bottom: 1.25rem;">Provision emergency responders and administrative personnel.</p>
-
-  <form id="cers-user-form">
-    <div class="cers-form-group">
-      <label for="name" class="cers-form-label">Full Name</label>
-      <input type="text" id="name" class="cers-form-control" required placeholder="e.g. Capt. Vance">
-    </div>
-
-    <div class="cers-form-group">
-      <label for="email" class="cers-form-label">Email Address</label>
-      <input type="email" id="email" class="cers-form-control" required placeholder="e.g. security-dispatch@campusalert.edu">
-    </div>
-
-    <div class="cers-form-group">
-      <label for="password" class="cers-form-label">Password</label>
-      <input type="password" id="password" class="cers-form-control" required placeholder="••••••••">
-    </div>
-
-    <div class="cers-form-group">
-      <label for="role" class="cers-form-label">System Role</label>
-      <select id="role" class="cers-form-control">
-        <option value="reporter">Reporter (Student/Staff)</option>
-        <option value="response_unit">Response Unit (Responder)</option>
-        <option value="admin">Administrator</option>
-      </select>
-    </div>
-
-    <div class="cers-form-group" id="unit-type-group" style="display: none;">
-      <label for="response_unit_type" class="cers-form-label">Response Unit Discipline</label>
-      <select id="response_unit_type" class="cers-form-control">
-        <option value="security">Security Dispatch</option>
-        <option value="medical">Medical Response</option>
-        <option value="fire">Fire Marshall</option>
-      </select>
-    </div>
-
-    <div id="user-feedback" class="cers-form-feedback"></div>
-
-    <div class="d-flex gap-2 mt-4" style="border-top: 1px solid var(--cers-border); padding-top: 1rem;">
-      <button type="submit" class="cers-btn cers-btn-primary flex-grow-1">SAVE ACCOUNT</button>
-      <button type="reset" class="cers-btn cers-btn-secondary" onclick="window.location.reload();">CANCEL</button>
-    </div>
-  </form>
-
-  <div style="border-top: 2px solid var(--cers-border); margin: 2rem 0 1rem 0; padding-top: 1.5rem; font-weight: 700; font-size: 1rem; color: var(--cers-text-main);">
-    Registered Accounts
-  </div>
-
-  <div class="cers-list-feed" style="max-height: 320px; overflow-y: auto;">
-    <% users.forEach(u => { %>
-      <div class="cers-list-item" style="padding: 0.65rem 0.85rem;">
-        <div class="cers-list-details">
-          <div style="font-weight: 700; font-size: 0.85rem; color: var(--cers-text-main);"><%= u.name %></div>
-          <div style="font-size: 0.72rem; color: var(--cers-text-muted);"><%= u.email %></div>
-          <div style="margin-top: 0.25rem;">
-            <span class="cers-badge-role cers-role-<%= u.role %>" style="font-size: 0.6rem; padding: 0.1rem 0.4rem; background-color: #f1f5f9; border: 1px solid #cbd5e1; color: #475569;">
-              <%= u.role === 'response_unit' ? `${u.response_unit_type.toUpperCase()} RESPONDER` : u.role.toUpperCase() %>
-            </span>
-          </div>
-        </div>
-        <div style="display: flex; flex-direction: column; gap: 0.25rem;">
-          <button class="cers-btn cers-btn-secondary cers-btn-edit-user" data-user-json="<%= JSON.stringify(u) %>" style="font-size: 0.7rem; padding: 0.25rem 0.5rem; text-transform: none; border-radius: 8px;">Edit</button>
-          <% if (u.id !== user.id) { %>
-            <button class="cers-btn cers-btn-danger cers-btn-delete-user" data-user-id="<%= u.id %>" data-user-name="<%= u.name %>" style="font-size: 0.7rem; padding: 0.25rem 0.5rem; text-transform: none; border-radius: 8px;">Delete</button>
-          <% } %>
-        </div>
+      <div class="cers-summary-card cers-active-card">
+        <div class="cers-summary-val"><%= activeIncidents %></div>
+        <div class="cers-summary-label" style="font-size: 0.62rem;">Active Alerts</div>
       </div>
-    <% }) %>
+      <div class="cers-summary-card">
+        <div class="cers-summary-val"><%= analytics.avgResponseTime %><span style="font-size: 0.9rem; font-weight: 600; color: var(--cers-text-muted);">m</span></div>
+        <div class="cers-summary-label" style="font-size: 0.62rem;">Avg Response</div>
+      </div>
+      <div class="cers-summary-card" style="border-top-color: var(--cers-danger);">
+        <div class="cers-summary-val" style="color: var(--cers-danger);"><%= criticalIncidents %></div>
+        <div class="cers-summary-label" style="color: var(--cers-danger); font-size: 0.62rem;">Criticals</div>
+      </div>
+    </div>
+
+    <!-- Tabs Switcher -->
+    <div class="cers-tabs-switcher">
+      <div class="cers-tab-btn cers-active" onclick="window.location.hash='#incidents-log';">Incident Dispatch Log</div>
+      <div class="cers-tab-btn" onclick="window.location.hash='#users-control';">User Account Provisioning</div>
+    </div>
+
+    <!-- Incident Logs Section -->
+    <div class="cers-card" id="incidents-log" style="scroll-margin-top: 20px;">
+      <div class="cers-card-title">
+        <span>Incident Dispatch Log</span>
+        <a href="/api/admin/export-csv" class="cers-btn cers-btn-secondary" style="font-size: 0.72rem; padding: 0.35rem 0.75rem; text-transform: none;" download>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.35rem;">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          Export CSV Log
+        </a>
+      </div>
+      <p class="text-muted" style="font-size: 0.78rem; margin-bottom: 1.15rem;">Comprehensive campus incident feed and operational transition audit trails.</p>
+
+      <div class="cers-list-feed">
+        <% incidents.forEach(incident => { %>
+          <% 
+            let iconSvg = '';
+            let iconColorClass = '';
+            if (incident.category === 'fire') {
+              iconColorClass = 'cers-icon-danger';
+              iconSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 3.5z"/></svg>';
+            } else if (incident.category === 'medical') {
+              iconColorClass = 'cers-icon-danger';
+              iconSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>';
+            } else if (incident.category === 'security') {
+              iconColorClass = 'cers-icon-danger';
+              iconSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>';
+            } else if (incident.category === 'accident') {
+              iconColorClass = '';
+              iconSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>';
+            } else {
+              iconColorClass = '';
+              iconSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>';
+            }
+          %>
+          <div class="cers-list-item">
+            <div class="cers-list-icon <%= iconColorClass %>">
+              <%- iconSvg %>
+            </div>
+            <div class="cers-list-details">
+              <div class="cers-list-title">Incident #<%= incident.id %> — <%= incident.category.toUpperCase() %></div>
+              <div class="cers-list-subtitle">Reporter: <strong><%= incident.reporter_name %></strong> (<%= incident.reporter_email %>)</div>
+              <div style="font-size: 0.68rem; color: var(--cers-text-muted); margin-top: 0.15rem;">
+                <%= new Date(incident.created_at).toLocaleString() %>
+              </div>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 0.35rem;">
+              <div style="display: flex; gap: 0.35rem;">
+                <span class="cers-pill cers-pill-severity-<%= incident.severity %>">
+                  <%= incident.severity %>
+                </span>
+                <span class="cers-pill cers-pill-status-<%= incident.status %>">
+                  <%= incident.status %>
+                </span>
+              </div>
+              <a href="/incidents/<%= incident.id %>" class="cers-btn cers-btn-secondary" style="font-size: 0.72rem; padding: 0.25rem 0.6rem; text-transform: none;">
+                Audit Details
+              </a>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    </div>
+
+    <!-- Accounts Control Section (Creation Form + User List) -->
+    <div class="cers-card" id="users-control" style="scroll-margin-top: 20px; display: none;">
+      <div class="cers-card-title" id="cers-user-form-title">Account Provisioning</div>
+      <p class="text-muted" style="font-size: 0.78rem; margin-bottom: 1.25rem;">Provision and manage dispatch personnel, campus safety officers, and administrative users.</p>
+
+      <form id="cers-user-form">
+        <div class="cers-form-group">
+          <label for="name" class="cers-form-label">Full Name</label>
+          <input type="text" id="name" class="cers-form-control" required placeholder="e.g. Officer John Vance">
+        </div>
+
+        <div class="cers-form-group">
+          <label for="email" class="cers-form-label">Campus Email</label>
+          <input type="email" id="email" class="cers-form-control" required placeholder="e.g. security-dispatch@campusalert.edu">
+        </div>
+
+        <div class="cers-form-group">
+          <label for="password" class="cers-form-label">Password</label>
+          <input type="password" id="password" class="cers-form-control" required placeholder="••••••••">
+        </div>
+
+        <div class="cers-form-group">
+          <label for="role" class="cers-form-label">System Role</label>
+          <select id="role" class="cers-form-control">
+            <option value="reporter">Reporter (Student / Staff)</option>
+            <option value="response_unit">Response Unit (Emergency Responder)</option>
+            <option value="admin">Administrator</option>
+          </select>
+        </div>
+
+        <div class="cers-form-group" id="unit-type-group" style="display: none;">
+          <label for="response_unit_type" class="cers-form-label">Response Unit Discipline</label>
+          <select id="response_unit_type" class="cers-form-control">
+            <option value="security">Security Dispatch</option>
+            <option value="medical">Medical Response</option>
+            <option value="fire">Fire Marshall</option>
+          </select>
+        </div>
+
+        <div id="user-feedback" class="cers-form-feedback"></div>
+
+        <div class="d-flex gap-2 mt-4 pt-3" style="border-top: 1px solid var(--cers-border);">
+          <button type="submit" class="cers-btn cers-btn-primary flex-grow-1">SAVE ACCOUNT</button>
+          <button type="reset" class="cers-btn cers-btn-secondary" onclick="window.location.reload();">CANCEL</button>
+        </div>
+      </form>
+
+      <div style="border-top: 1px solid var(--cers-border); margin: 2rem 0 1rem 0; padding-top: 1.25rem; font-weight: 800; font-size: 0.95rem; color: var(--cers-primary); text-transform: uppercase; letter-spacing: 0.5px;">
+        Configured Campus Accounts
+      </div>
+
+      <div class="cers-list-feed" style="max-height: 360px; overflow-y: auto;">
+        <% users.forEach(u => { %>
+          <div class="cers-list-item" style="padding: 0.75rem 1rem;">
+            <div class="cers-list-details">
+              <div style="font-weight: 700; font-size: 0.88rem; color: var(--cers-primary);"><%= u.name %></div>
+              <div style="font-size: 0.75rem; color: var(--cers-text-muted);"><%= u.email %></div>
+              <div style="margin-top: 0.25rem;">
+                <span class="cers-badge-role">
+                  <%= u.role === 'response_unit' ? `${u.response_unit_type.toUpperCase()} DISPATCH` : u.role.toUpperCase() %>
+                </span>
+              </div>
+            </div>
+            <div style="display: flex; gap: 0.35rem;">
+              <button class="cers-btn cers-btn-secondary cers-btn-edit-user" data-user-json="<%= JSON.stringify(u) %>" style="font-size: 0.72rem; padding: 0.25rem 0.55rem; text-transform: none;">Edit</button>
+              <% if (u.id !== user.id) { %>
+                <button class="cers-btn cers-btn-danger cers-btn-delete-user" data-user-id="<%= u.id %>" data-user-name="<%= u.name %>" style="font-size: 0.72rem; padding: 0.25rem 0.55rem; text-transform: none;">Delete</button>
+              <% } %>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right/Sidebar Column: Live Analytics Breakdown -->
+  <div class="col-xl-4 col-lg-5">
+    
+    <!-- Incidents Volume by Category -->
+    <div class="cers-card">
+      <div class="cers-card-title" style="margin-bottom: 0.5rem;">Incident Distribution</div>
+      <p class="text-muted" style="font-size: 0.78rem; margin-bottom: 1.25rem;">Total filings processed, mapped by primary disaster division.</p>
+      
+      <div class="cers-list-feed">
+        <% 
+          const categories = ['security', 'medical', 'fire', 'accident', 'other'];
+          const categoryDisplayNames = {
+            security: 'Security Alerts',
+            medical: 'Medical Emergency',
+            fire: 'Fire Hazard',
+            accident: 'Slip / Collision',
+            other: 'General Issues'
+          };
+          categories.forEach(cat => {
+            const match = analytics.byCategory.find(c => c.category === cat);
+            const count = match ? match.count : 0;
+        %>
+          <div class="cers-list-item" style="padding: 0.65rem 0.85rem; gap: 0.75rem; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 0.65rem;">
+              <div class="cers-pulse-icon" style="background-color: <%= cat === 'fire' ? '#ef4444' : (cat === 'medical' ? '#ec4899' : (cat === 'security' ? '#3b82f6' : '#6b7280')) %>; animation: none;"></div>
+              <span style="font-weight: 600; font-size: 0.82rem;"><%= categoryDisplayNames[cat] %></span>
+            </div>
+            <span class="cers-pill cers-pill-status-reported" style="font-family: var(--cers-font-mono); font-size: 0.75rem;"><%= count %></span>
+          </div>
+        <% }) %>
+      </div>
+    </div>
+
+    <!-- Severity Classification Load -->
+    <div class="cers-card">
+      <div class="cers-card-title" style="margin-bottom: 0.5rem;">Severity Demographics</div>
+      <p class="text-muted" style="font-size: 0.78rem; margin-bottom: 1.25rem;">Real-time queue load, grouped by priority class levels.</p>
+      
+      <div class="cers-list-feed">
+        <% 
+          const severities = ['critical', 'high', 'medium', 'low'];
+          severities.forEach(sev => {
+            const match = analytics.bySeverity.find(s => s.severity === sev);
+            const count = match ? match.count : 0;
+        %>
+          <div class="cers-list-item" style="padding: 0.65rem 0.85rem; gap: 0.75rem; justify-content: space-between;">
+            <span style="font-weight: 700; font-size: 0.82rem; text-transform: uppercase;" class="text-<%= sev %>"><%= sev %></span>
+            <span class="cers-pill cers-pill-severity-<%= sev %>" style="font-family: var(--cers-font-mono); font-size: 0.75rem;"><%= count %></span>
+          </div>
+        <% }) %>
+      </div>
+    </div>
+
   </div>
 </div>
 

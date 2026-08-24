@@ -8,19 +8,19 @@
 <!-- Fast Follow Details Form (Visible only immediately after one-click alert) -->
 <% if (fastFollow) { %>
   <div class="cers-fast-follow-banner">
-    <div style="font-weight: 800; color: #1e40af; font-size: 0.95rem; text-transform: uppercase; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.35rem;">
+    <div style="font-weight: 800; color: var(--cers-accent); font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.45rem;">
       <span class="cers-pulse-icon"></span>
-      Alert Broadcasted
+      Emergency Transmission Broadcasted
     </div>
-    <p class="text-muted" style="font-size: 0.75rem; margin-bottom: 1rem;">Responders have your location. If safe, supply more details below.</p>
+    <p class="text-muted" style="font-size: 0.78rem; margin-bottom: 1rem;">Responders have received your GPS coordinates. If safe, supply supplementary details below to assist incoming units.</p>
     
     <form id="cers-fast-follow-form" data-incident-id="<%= incident.id %>">
       <div class="cers-form-group">
-        <label for="category" class="cers-form-label">Category</label>
+        <label for="category" class="cers-form-label">Incident Category</label>
         <select id="category" class="cers-form-control">
           <option value="other" <%= incident.category === 'other' ? 'selected' : '' %>>Other / General Danger</option>
-          <option value="security" <%= incident.category === 'security' ? 'selected' : '' %>>Security / Assault</option>
-          <option value="fire" <%= incident.category === 'fire' ? 'selected' : '' %>>Fire / Smoke</option>
+          <option value="security" <%= incident.category === 'security' ? 'selected' : '' %>>Security Alert / Assault</option>
+          <option value="fire" <%= incident.category === 'fire' ? 'selected' : '' %>>Fire / Smoke Hazard</option>
           <option value="medical" <%= incident.category === 'medical' ? 'selected' : '' %>>Medical Emergency</option>
           <option value="accident" <%= incident.category === 'accident' ? 'selected' : '' %>>Accident / Slip & Fall</option>
         </select>
@@ -30,102 +30,106 @@
         <select id="severity" class="cers-form-control">
           <option value="critical" <%= incident.severity === 'critical' ? 'selected' : '' %>>Critical (Immediate Threat)</option>
           <option value="high" <%= incident.severity === 'high' ? 'selected' : '' %>>High (Urgent Emergency)</option>
-          <option value="medium" <%= incident.severity === 'medium' ? 'selected' : '' %>>Medium (Hazards/Suspicious)</option>
+          <option value="medium" <%= incident.severity === 'medium' ? 'selected' : '' %>>Medium (Moderate Hazard)</option>
           <option value="low" <%= incident.severity === 'low' ? 'selected' : '' %>>Low (Information only)</option>
         </select>
       </div>
       <div class="cers-form-group">
-        <label for="description" class="cers-form-label">Quick Description</label>
-        <input type="text" id="description" class="cers-form-control" placeholder="e.g. Smoke in Wing B Lab 3">
+        <label for="description" class="cers-form-label">Immediate Situation Notes</label>
+        <input type="text" id="description" class="cers-form-control" placeholder="e.g. Smoke coming from Science Wing Lab 2B">
       </div>
       <div id="fast-follow-feedback" class="cers-form-feedback"></div>
-      <button type="submit" class="cers-btn cers-btn-primary cers-btn-block mt-3">SUBMIT DETAILS</button>
+      <button type="submit" class="cers-btn cers-btn-primary cers-btn-block mt-3">SUBMIT SUPPLEMENTARY DETAILS</button>
     </form>
   </div>
 <% } %>
 
 <!-- Incident Overview Card -->
 <div class="cers-card">
-  <div class="cers-card-title" style="border-bottom: 1px solid var(--cers-border); padding-bottom: 0.5rem; margin-bottom: 1rem;">
+  <div class="cers-card-title" style="border-bottom: 1px solid var(--cers-border); padding-bottom: 0.75rem; margin-bottom: 1.15rem;">
     <span>Incident Entry #<%= incident.id %></span>
     <span class="cers-pill cers-pill-status-<%= incident.status %>"><%= incident.status %></span>
   </div>
 
-  <div class="mb-3">
-    <div style="font-size: 0.72rem; text-transform: uppercase; font-weight: 800; color: var(--cers-text-muted);">Reporter</div>
-    <div style="font-weight: 700; font-size: 0.9rem;"><%= incident.reporter_name %></div>
-    <div style="font-size: 0.75rem; color: var(--cers-text-muted);"><%= incident.reporter_email %></div>
-    <div style="font-size: 0.7rem; color: var(--cers-text-muted); margin-top: 0.1rem;">
-      Filed <%= new Date(incident.created_at).toLocaleString() %>
+  <div class="row g-3 mb-3">
+    <div class="col-md-6">
+      <div style="font-size: 0.7rem; text-transform: uppercase; font-weight: 800; color: var(--cers-text-muted); letter-spacing: 0.5px;">Reporting Party</div>
+      <div style="font-weight: 700; font-size: 0.92rem; color: var(--cers-primary); margin-top: 0.15rem;"><%= incident.reporter_name %></div>
+      <div style="font-size: 0.78rem; color: var(--cers-text-muted);"><%= incident.reporter_email %></div>
+      <div style="font-size: 0.72rem; color: var(--cers-text-muted); margin-top: 0.2rem;">
+        Filed <%= new Date(incident.created_at).toLocaleString() %>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div style="font-size: 0.7rem; text-transform: uppercase; font-weight: 800; color: var(--cers-text-muted); letter-spacing: 0.5px;">Classification</div>
+      <div style="display: flex; gap: 0.5rem; align-items: center; margin-top: 0.25rem;">
+        <span style="font-weight: 800; font-size: 0.95rem; text-transform: uppercase; color: var(--cers-primary);"><%= incident.category %></span>
+        <span class="cers-pill cers-pill-severity-<%= incident.severity %>"><%= incident.severity %></span>
+      </div>
     </div>
   </div>
 
   <div class="mb-3">
-    <div style="font-size: 0.72rem; text-transform: uppercase; font-weight: 800; color: var(--cers-text-muted);">Category / Severity</div>
-    <div style="display: flex; gap: 0.5rem; align-items: center; margin-top: 0.25rem;">
-      <span style="font-weight: 800; font-size: 0.95rem; text-transform: uppercase; color: var(--cers-accent);"><%= incident.category %></span>
-      <span class="cers-pill cers-pill-severity-<%= incident.severity %>"><%= incident.severity %></span>
+    <div style="font-size: 0.7rem; text-transform: uppercase; font-weight: 800; color: var(--cers-text-muted); letter-spacing: 0.5px; margin-bottom: 0.35rem;">Description & Location Notes</div>
+    <div style="font-size: 0.88rem; background-color: var(--cers-bg-subtle); padding: 0.85rem 1rem; border-radius: var(--cers-radius); border: 1px solid var(--cers-border-subtle); border-left: 3px solid var(--cers-accent); line-height: 1.5; color: var(--cers-primary);">
+      <%= incident.description || 'One-click emergency alert triggered without initial text description.' %>
     </div>
-  </div>
-
-  <div class="mb-3">
-    <div style="font-size: 0.72rem; text-transform: uppercase; font-weight: 800; color: var(--cers-text-muted); margin-bottom: 0.25rem;">Description</div>
-    <p style="font-size: 0.88rem; background-color: #f8fafc; padding: 0.75rem; border-radius: var(--cers-radius); border-left: 3px solid var(--cers-border); line-height: 1.4;">
-      <%= incident.description || 'One-click alert triggered.' %>
-    </p>
   </div>
 
   <!-- Location Map -->
-  <div>
-    <div style="font-size: 0.72rem; text-transform: uppercase; font-weight: 800; color: var(--cers-text-muted); margin-bottom: 0.5rem;">Incident GPS Coordinates</div>
+  <div class="mt-4">
+    <div style="font-size: 0.7rem; text-transform: uppercase; font-weight: 800; color: var(--cers-text-muted); letter-spacing: 0.5px; margin-bottom: 0.45rem;">Incident GPS Coordinates</div>
     <% if (incident.latitude && incident.longitude) { %>
       <div id="cers-map" class="cers-map-container mb-2"></div>
-      <div style="font-family: monospace; font-size: 0.75rem; text-align: center; color: var(--cers-text-muted);">
-        Lat: <%= incident.latitude %>, Lng: <%= incident.longitude %>
+      <div style="font-family: var(--cers-font-mono); font-size: 0.75rem; text-align: center; color: var(--cers-text-muted); background-color: var(--cers-bg-subtle); padding: 0.35rem; border: 1px solid var(--cers-border-subtle); border-radius: var(--cers-radius-sm);">
+        Latitude: <%= incident.latitude %>, Longitude: <%= incident.longitude %>
       </div>
     <% } else { %>
-      <p class="text-muted" style="font-size: 0.8rem;">No GPS coordinates captured.</p>
+      <div class="text-center py-4" style="border: 1px dashed var(--cers-border); border-radius: var(--cers-radius); background-color: var(--cers-bg-subtle);">
+        <p class="text-muted" style="font-size: 0.8rem; margin-bottom: 0;">No GPS coordinates captured for this incident.</p>
+      </div>
     <% } %>
   </div>
 </div>
 
 <!-- Status Transition Panel (Responder / Admin only) -->
 <% if (user.role === 'response_unit' || user.role === 'admin') { %>
-  <div class="cers-card" style="border: 2px solid var(--cers-accent);">
-    <div class="cers-card-title">Dispatch Control</div>
-    <p class="text-muted" style="font-size: 0.75rem; margin-bottom: 1rem;">Transition incident status logs through lifecycle.</p>
+  <div class="cers-card" style="border-top: 3px solid var(--cers-accent);">
+    <div class="cers-card-title">Dispatch Status Transition Control</div>
+    <p class="text-muted" style="font-size: 0.78rem; margin-bottom: 1.15rem;">Advance incident through the verified operational lifecycle log.</p>
     
     <form id="cers-status-update-form" data-incident-id="<%= incident.id %>">
       <div class="cers-form-group">
-        <label for="status-select" class="cers-form-label">Transition Status</label>
+        <label for="status-select" class="cers-form-label">Update Operational State</label>
         <select id="status-select" class="cers-form-control">
-          <option value="reported" <%= incident.status === 'reported' ? 'selected' : '' %> disabled>Reported (Initial)</option>
-          <option value="acknowledged" <%= incident.status === 'acknowledged' ? 'selected' : '' %>>Acknowledged (Confirm Alert)</option>
-          <option value="dispatched" <%= incident.status === 'dispatched' ? 'selected' : '' %>>Dispatched (Units En Route)</option>
-          <option value="in_progress" <%= incident.status === 'in_progress' ? 'selected' : '' %>>In Progress (Handling Scene)</option>
-          <option value="resolved" <%= incident.status === 'resolved' ? 'selected' : '' %>>Resolved (Closed Audit)</option>
+          <option value="reported" <%= incident.status === 'reported' ? 'selected' : '' %> disabled>Reported (Initial Alert Received)</option>
+          <option value="acknowledged" <%= incident.status === 'acknowledged' ? 'selected' : '' %>>Acknowledged (Unit Confirmed Alert)</option>
+          <option value="dispatched" <%= incident.status === 'dispatched' ? 'selected' : '' %>>Dispatched (Response Team En Route)</option>
+          <option value="in_progress" <%= incident.status === 'in_progress' ? 'selected' : '' %>>In Progress (Handling On-Scene)</option>
+          <option value="resolved" <%= incident.status === 'resolved' ? 'selected' : '' %>>Resolved (Closed & Documented)</option>
         </select>
       </div>
       <div id="status-feedback" class="cers-form-feedback"></div>
-      <button type="submit" class="cers-btn cers-btn-primary cers-btn-block mt-3">UPDATE STATUS</button>
+      <button type="submit" class="cers-btn cers-btn-primary cers-btn-block mt-3">EXECUTE STATUS TRANSITION</button>
     </form>
   </div>
 <% } %>
 
 <!-- Chronological Audit Trail -->
 <div class="cers-card">
-  <div class="cers-card-title">Status Audit Trail</div>
-  <p class="text-muted" style="font-size: 0.75rem; margin-bottom: 1rem;">Chronological operations log.</p>
+  <div class="cers-card-title">Dispatch Lifecycle Audit Trail</div>
+  <p class="text-muted" style="font-size: 0.78rem; margin-bottom: 1rem;">Chronological operations log of status modifications.</p>
   
   <div class="cers-audit-timeline">
     <% statusLogs.forEach(log => { %>
       <div class="cers-audit-item cers-completed">
-        <div style="font-weight: 700; font-size: 0.82rem; text-transform: uppercase;">
-          Status: <%= log.status %>
+        <div style="font-weight: 800; font-size: 0.82rem; text-transform: uppercase; color: var(--cers-primary);">
+          Transition: <%= log.status %>
         </div>
         <div class="cers-audit-meta">
-          By: <strong><%= log.updater_name %></strong> 
-          (<%= log.updater_role === 'response_unit' ? `${log.response_unit_type.toUpperCase()} UNIT` : log.updater_role.toUpperCase() %>)
+          Updated by: <strong><%= log.updater_name %></strong> 
+          (<%= log.updater_role === 'response_unit' ? `${log.response_unit_type.toUpperCase()} DISPATCH` : log.updater_role.toUpperCase() %>)
         </div>
         <div class="cers-audit-meta" style="font-size: 0.68rem;">
           <%= new Date(log.updated_at).toLocaleString() %>

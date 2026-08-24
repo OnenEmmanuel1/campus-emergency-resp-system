@@ -5,7 +5,7 @@ CampusAlert is a production-ready, full-stack Campus Emergency Response and Repo
 ## Stack Overview
 - **Backend**: Node.js + Express.js
 - **Frontend Templates**: HTML5 + EJS templating with shared partial layouts
-- **Design System**: Strict solid-color flat CSS (no gradients) with CSS variables, Inter Typography, and `cers-` prefixes
+- **Design System**: Strict solid-color flat CSS (no gradients) with CSS variables, Plus Jakarta Sans Typography, and `cers-` prefixes
 - **Database**: MySQL 8.0 with normalized tables and strictly parameterized raw queries (via `mysql2/promise`)
 - **Authentication**: `express-session` + `bcryptjs`
 - **Location Capture**: Client-side browser-native Geolocation API (HTML5) with immediate dispatch and fallback options

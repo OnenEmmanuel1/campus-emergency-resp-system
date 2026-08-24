@@ -5,14 +5,14 @@
   <%- include('partials/sidebar') %>
   
   <main class="cers-content">
-    <div class="cers-card" style="border-color: var(--cers-danger);">
-      <div class="cers-card-title text-danger" style="border-bottom: 2px solid #fee2e2; padding-bottom: 0.5rem;">
-        An Error Has Occurred
+    <div class="cers-card" style="border-top: 3px solid var(--cers-danger);">
+      <div class="cers-card-title text-danger" style="border-bottom: 1px solid #fee2e2; padding-bottom: 0.75rem;">
+        Security Notice / Error
       </div>
-      <p class="py-3" style="font-size: 1.1rem;"><%= typeof message !== 'undefined' ? message : 'An unexpected security or routing error has occurred.' %></p>
+      <p class="py-3" style="font-size: 1rem; color: var(--cers-primary);"><%= typeof message !== 'undefined' ? message : 'An unexpected security or routing error has occurred.' %></p>
       
-      <div class="mt-4">
-        <a href="/dashboard" class="cers-btn cers-btn-primary">Return to Dashboard</a>
+      <div class="mt-3 pt-3" style="border-top: 1px solid var(--cers-border-subtle);">
+        <a href="/dashboard" class="cers-btn cers-btn-primary">Return to Console</a>
       </div>
     </div>
   </main>

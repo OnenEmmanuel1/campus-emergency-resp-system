@@ -16,13 +16,13 @@
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-  <!-- Monex Shell centered layout -->
+  <!-- Centered App Shell -->
   <div class="cers-mobile-shell">
     
     <!-- Toast Flash Notifications -->
     <% if (typeof flashSuccess !== 'undefined' && flashSuccess) { %>
       <div class="cers-toast cers-toast-success" onclick="this.style.display='none';">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.25rem;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;">
           <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
           <polyline points="22 4 12 14.01 9 11.01"/>
         </svg>
@@ -32,10 +32,10 @@
 
     <% if (typeof flashError !== 'undefined' && flashError) { %>
       <div class="cers-toast cers-toast-error" onclick="this.style.display='none';">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.25rem;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;">
           <circle cx="12" cy="12" r="10"/>
-          <line x1="15" y1="9" x2="9" y2="15"/>
-          <line x1="9" y1="9" x2="15" y2="15"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
         </svg>
         <span><%= flashError %></span>
       </div>
@@ -45,43 +45,41 @@
     <% if (typeof user !== 'undefined' && user) { %>
       <header class="cers-mobile-header">
         <div class="cers-mobile-brand">
-          <!-- Monex Style SVG Brand Icon -->
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-            <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
           </svg>
-          CampusAlert
+          <span>CampusAlert <span style="font-size: 0.7rem; font-weight: 600; color: var(--cers-text-muted); text-transform: uppercase; letter-spacing: 0.5px; border-left: 1px solid var(--cers-border); padding-left: 0.5rem; margin-left: 0.25rem;">CERRS</span></span>
         </div>
         
         <div style="display: flex; align-items: center; gap: 0.75rem;">
-          <span class="cers-badge-role cers-role-<%= user.role %>" style="margin-right: 0.25rem;">
-            <%= user.role === 'response_unit' ? `${user.response_unit_type.toUpperCase()} UNIT` : user.role.toUpperCase() %>
+          <span class="cers-badge-role">
+            <%= user.role === 'response_unit' ? `${user.response_unit_type.toUpperCase()} DISPATCH` : user.role.toUpperCase() %>
           </span>
           
           <!-- Notification Bell Button -->
           <div style="position: relative;">
-            <button id="cers-nav-notification-btn" style="background: none; border: none; color: var(--cers-text-main); cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0.35rem; border-radius: 50%; width: 34px; height: 34px; background-color: #eff6ff; outline: none; transition: all 0.15s ease-in-out; position: relative;">
-              <!-- Bell SVG -->
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <button id="cers-nav-notification-btn" aria-label="Notifications" style="background: none; border: 1px solid var(--cers-border); color: var(--cers-text-main); cursor: pointer; display: flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: var(--cers-radius); background-color: #ffffff; outline: none; position: relative;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
                 <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
               </svg>
               <!-- Badge -->
-              <span id="cers-notification-badge" style="display: none; position: absolute; top: -2px; right: -2px; background-color: var(--cers-danger); color: white; border-radius: 50%; font-size: 0.6rem; width: 15px; height: 15px; font-weight: 800; justify-content: center; align-items: center; line-height: 1; border: 1.5px solid #ffffff;">0</span>
+              <span id="cers-notification-badge" style="display: none; position: absolute; top: -4px; right: -4px; background-color: var(--cers-danger); color: white; border-radius: var(--cers-radius-pill); font-size: 0.6rem; min-width: 16px; height: 16px; font-weight: 800; justify-content: center; align-items: center; line-height: 1; border: 1px solid #ffffff; padding: 0 2px;">0</span>
             </button>
 
             <!-- Notification Dropdown Menu Tray -->
-            <div id="cers-notification-dropdown" style="display: none; position: absolute; top: 42px; right: -40px; width: 280px; background: white; border: 1.5px solid var(--cers-border); border-radius: var(--cers-radius); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12); z-index: 1050; overflow: hidden; text-align: left;">
+            <div id="cers-notification-dropdown" style="display: none; position: absolute; top: 40px; right: 0; width: 300px; background: white; border: 1px solid var(--cers-border); border-radius: var(--cers-radius); box-shadow: var(--cers-shadow-elevated); z-index: 1050; overflow: hidden; text-align: left;">
               <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.65rem 0.85rem; border-bottom: 1px solid var(--cers-border); background-color: #f8fafc;">
-                <span style="font-weight: 800; font-size: 0.75rem; color: var(--cers-text-main);">Emergency Alerts</span>
-                <button id="cers-mark-all-read" style="background: none; border: none; color: var(--cers-accent); font-size: 0.68rem; font-weight: 700; cursor: pointer; padding: 0; outline: none;">Mark all read</button>
+                <span style="font-weight: 800; font-size: 0.75rem; color: var(--cers-primary); text-transform: uppercase; letter-spacing: 0.5px;">Emergency Dispatch Feed</span>
+                <button id="cers-mark-all-read" style="background: none; border: none; color: var(--cers-accent); font-size: 0.68rem; font-weight: 700; cursor: pointer; padding: 0; outline: none;">Mark read</button>
               </div>
-              <div id="cers-notification-list" style="max-height: 240px; overflow-y: auto; font-size: 0.75rem; color: var(--cers-text-main);">
+              <div id="cers-notification-list" style="max-height: 260px; overflow-y: auto; font-size: 0.75rem; color: var(--cers-text-main);">
                 <div style="padding: 1.5rem; text-align: center; color: var(--cers-text-muted);">No new notifications.</div>
               </div>
             </div>
           </div>
 
-          <div style="width: 32px; height: 32px; border-radius: 50%; background-color: var(--cers-accent); color: #ffffff; display: flex; justify-content: center; align-items: center; font-weight: 800; font-size: 0.85rem; text-transform: uppercase; flex-shrink: 0;" title="<%= user.name %>">
+          <div style="width: 34px; height: 34px; border-radius: 8px; background-color: #e6f4f1; color: var(--cers-accent); display: flex; justify-content: center; align-items: center; font-weight: 800; font-size: 0.8rem; text-transform: uppercase; flex-shrink: 0; border: 1px solid rgba(15, 150, 117, 0.15);" title="<%= user.name %>">
             <%= user.name.split(' ').map(n => n[0]).join('').substring(0, 2) %>
           </div>
         </div>
