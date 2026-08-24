@@ -65,15 +65,7 @@ CampusAlert gathers location coordinates using the browser-native W3C Geolocatio
    mysql -u root -p campus_alert < schema.sql
    mysql -u root -p campus_alert < seed.sql
    ```
-4. Verify local configuration settings in the `.env` file (adjust `DB_HOST`, `DB_USER`, `DB_PASSWORD` if necessary):
-   ```properties
-   PORT=3000
-   DB_HOST=127.0.0.1
-   DB_USER=root
-   DB_PASSWORD=rootpassword
-   DB_NAME=campus_alert
-   DB_PORT=3306
-   SESSION_SECRET=campus_alert_super_secret_session_key_9876
+
    ```
 5. Spin up the local development environment:
    ```bash
